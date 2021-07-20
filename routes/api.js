@@ -41,14 +41,13 @@ module.exports = function(router) {
         { expiresIn: "2h" }
       );
 
-      user.token = token;
-
       console.log("token", token);
 
       res.status(201).json({
-        success: true,
+        auth: true,
         message: "user created",
-        data: user
+        user,
+        token
       });
 
     } catch(e) {
