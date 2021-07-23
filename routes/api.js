@@ -11,7 +11,7 @@ module.exports = function(router) {
       if(!(name && email && password)) {
         res.status(400).json({
           success: false,
-          message: "All input is required"
+          message: "All inputs is required"
         });
       }
 
@@ -19,7 +19,7 @@ module.exports = function(router) {
       if(oldUser) {
         return res.status(409).json({
           success: false,
-          message: "User Already Exist. Please Login"
+          message: "User already exist. Please login"
         });
       }
 
@@ -43,7 +43,7 @@ module.exports = function(router) {
 
       res.status(201).json({
         auth: true,
-        message: "user created",
+        message: "User created",
         user,
         token
       });
@@ -90,6 +90,6 @@ module.exports = function(router) {
       message: "Invalid Credentials"
     });
   });
-
+  
   return router;
 };
