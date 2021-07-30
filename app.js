@@ -14,7 +14,7 @@ app.use(cookieParser());
 
 app.use('/api', appRoutes);
 
-mongoose.connect('mongodb://localhost:27017/vuexTest', {
+mongoose.connect(`mongodb+srv://${process.env.DB_HOST}/${process.env.DB_NAME}`, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }, function(err) {

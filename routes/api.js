@@ -91,5 +91,12 @@ module.exports = function(router) {
     });
   });
   
+  router.get('/test', async (req, res, next) => {
+    res.json({
+      test: true,
+      msg: "test"
+    })
+  })
+
   return router;
 };
