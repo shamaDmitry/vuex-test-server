@@ -54,41 +54,45 @@ module.exports = function(router) {
   });
 
   router.post('/login', async function(req, res) {
-    const { email, password } = req.body;
+    try {
+      const { email, password } = req.body;
 
-    if(!(email && password)) {
-      res.status(400).json({
+      if(!(email && password)) {
+        res.status(400).json({
+          success: false,
+          message: "All input is required"
+        });
+      }
+  
+      const user = await User.findOne({ email });
+  
+      console.log('user', user);
+  
+      if(user && (await bcrypt.compare(password, user.password))) {
+        const token = jwt.sign(
+          {
+            user_id: user._id,
+            email
+          },
+          config.secret,
+          { expiresIn: "2h" }
+        );
+  
+        res.status(200).json({
+          auth: true,
+          message: "User authenticate!",
+          user,
+          token
+        });
+      }
+  
+      res.status(400).send({
         success: false,
-        message: "All input is required"
+        message: "Invalid Credentials"
       });
+    } catch(e) {
+      console.log(e);
     }
-
-    const user = await User.findOne({ email });
-
-    console.log('user', user);
-
-    if(user && (await bcrypt.compare(password, user.password))) {
-      const token = jwt.sign(
-        {
-          user_id: user._id,
-          email
-        },
-        config.secret,
-        { expiresIn: "2h" }
-      );
-
-      res.status(200).json({
-        auth: true,
-        message: "User authenticate!",
-        user,
-        token
-      });
-    }
-
-    res.status(400).send({
-      success: false,
-      message: "Invalid Credentials"
-    });
   });
   
   router.get('/test', async (req, res, next) => {
