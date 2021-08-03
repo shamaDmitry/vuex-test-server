@@ -63,11 +63,11 @@ module.exports = function(router) {
           message: "All input is required"
         });
       }
-  
+
       const user = await User.findOne({ email });
-  
+
       console.log('user', user);
-  
+
       if(user && (await bcrypt.compare(password, user.password))) {
         const token = jwt.sign(
           {
@@ -77,15 +77,21 @@ module.exports = function(router) {
           config.secret,
           { expiresIn: "2h" }
         );
-  
+
+        let { _id, name } = user;
+
         res.status(200).json({
           auth: true,
           message: "User authenticate!",
-          user,
+          user: {
+            _id,
+            name,
+            email
+          },
           token
         });
       }
-  
+
       res.status(400).send({
         success: false,
         message: "Invalid Credentials"
@@ -94,12 +100,32 @@ module.exports = function(router) {
       console.log(e);
     }
   });
-  
-  router.get('/test', async (req, res, next) => {
-    res.json({
-      test: true,
-      msg: "test"
-    })
+
+  router.post('/update-user', async (req, res, next) => {
+    try {
+      const { _id, name, email } = req.body;
+
+      const filter = { _id };
+      const update = { name, email };
+
+      const user = await User.findOneAndUpdate(filter, update, {
+        new: true,
+        useFindAndModify: true
+      });
+
+      if(user) {
+        res.status(200).json({
+          user,
+          message: "User updated"
+        })
+      } else {
+        res.status(404).json({
+          message: "User not found"
+        })
+      }
+    } catch(e) {
+      console.log(e)
+    }
   })
 
   return router;
