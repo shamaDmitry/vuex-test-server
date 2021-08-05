@@ -25,4 +25,8 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${
   }
 });
 
+app.get('/', async (req, res, next) => res.status(200).json({
+  msg: 'hello index page'
+}));
+
 module.exports = app;
