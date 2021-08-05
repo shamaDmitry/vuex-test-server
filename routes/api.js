@@ -128,10 +128,9 @@ module.exports = function(router) {
     }
   })
 
-  router.get('/test', async (req, res, next) => {
+  router.get('/', async (req, res, next) => {
     res.status(200).json({
-      msg: 'test',
-      code: 222
+      msg: 'hello'
     })
   })
 
