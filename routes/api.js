@@ -128,5 +128,11 @@ module.exports = function(router) {
     }
   })
 
+  router.get('/test', async (req, res, next) => {
+    res.status(200).json({
+      msg: 'test'
+    })
+  })
+
   return router;
 };
