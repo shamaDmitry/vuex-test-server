@@ -1,5 +1,8 @@
 import express from 'express';
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
+import userModel from '../models/users.js';
+import jsonwebtoken from 'jsonwebtoken';
+import { SECRET } from '../config.js';
 
 const router = express.Router();
 
@@ -14,7 +17,7 @@ router.post('/register', async function (req, res) {
       });
     }
 
-    const oldUser = await User.findOne({ email });
+    const oldUser = await userModel.findOne({ email });
     if (oldUser) {
       return res.status(409).json({
         success: false,
@@ -24,19 +27,19 @@ router.post('/register', async function (req, res) {
 
     let encryptedPassword = await bcrypt.hash(password, 10);
 
-    let user = await User.create({
+    let user = await userModel.create({
       name,
       email: email.toLowerCase(), // sanitize: convert email to lowercase
       password: encryptedPassword,
     });
 
     // Create token
-    const token = jwt.sign(
+    const token = jsonwebtoken.sign(
       {
         user_id: user._id,
         email,
       },
-      config.secret,
+      SECRET,
       { expiresIn: '2h' }
     );
 
@@ -62,17 +65,17 @@ router.post('/login', async function (req, res) {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await userModel.findOne({ email });
 
     console.log('user', user);
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const token = jwt.sign(
+      const token = jsonwebtoken.sign(
         {
           user_id: user._id,
           email,
         },
-        config.secret,
+        SECRET,
         { expiresIn: '2h' }
       );
 
@@ -106,7 +109,7 @@ router.post('/update-user', async (req, res, next) => {
     const filter = { _id };
     const update = { name, email };
 
-    const user = await User.findOneAndUpdate(filter, update, {
+    const user = await userModel.findOneAndUpdate(filter, update, {
       new: true,
       useFindAndModify: true,
     });
