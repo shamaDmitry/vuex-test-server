@@ -74,10 +74,10 @@ const login = async (req, res) => {
 
 const updateUser = async (req, res, next) => {
   try {
-    const { _id, name, email } = req.body;
+    const { _id, username, email } = req.body;
 
     const filter = { _id };
-    const update = { name, email };
+    const update = { username, email };
 
     const user = await userModel.findOneAndUpdate(filter, update, {
       new: true,
@@ -89,17 +89,8 @@ const updateUser = async (req, res, next) => {
         user,
         message: 'User updated',
       });
-
-      // res.status(200).json({
-      //   user,
-      //   message: 'User updated',
-      // });
     } else {
       responseHandler.badrequest(res, 'User not found');
-
-      // res.status(404).json({
-      //   message: 'User not found',
-      // });
     }
   } catch (e) {
     console.log(e);
@@ -124,7 +115,6 @@ const getTest = async (req, res) => {
   try {
     responseHandler.ok(res, {
       msg: 'user test',
-      test: req.user,
     });
   } catch {
     responseHandler.error(res);

@@ -42,6 +42,19 @@ router.post(
   userController.login
 );
 
+router.post(
+  '/update-user',
+  body('_id').exists().withMessage('id is required'),
+  body('email').exists().withMessage('email is required').trim().isEmail(),
+  body('username')
+    .exists()
+    .withMessage('username is required')
+    .isLength({ min: 3 })
+    .withMessage('username minimum 3 characters'),
+  requestHandler.validate,
+  userController.updateUser
+);
+
 router.get('/info', userController.getTest);
 
 export default router;
