@@ -43,7 +43,7 @@ const login = async (req, res) => {
 
     const user = await userModel
       .findOne({ email })
-      .select('email name password salt id');
+      .select('email username password salt id');
 
     if (!user) {
       return responseHandler.badrequest(res, 'User not exist');
@@ -63,9 +63,12 @@ const login = async (req, res) => {
     user.salt = undefined;
 
     responseHandler.ok(res, {
+      auth: true,
+      message: 'User authenticate!',
+      user: {
+        ...user._doc,
+      },
       token,
-      ...user._doc,
-      id: user.id,
     });
   } catch {
     responseHandler.error(res);
@@ -74,15 +77,17 @@ const login = async (req, res) => {
 
 const updateUser = async (req, res, next) => {
   try {
-    const { _id, username, email } = req.body;
+    const { _id, id, username, email } = req.body;
 
-    const filter = { _id };
+    const filter = { _id, id };
     const update = { username, email };
 
     const user = await userModel.findOneAndUpdate(filter, update, {
       new: true,
       useFindAndModify: true,
     });
+
+    user.password = undefined;
 
     if (user) {
       responseHandler.ok(res, {
